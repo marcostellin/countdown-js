@@ -2,31 +2,43 @@ var date = document.querySelector("input[type=date]");
 var newCntdownBtn = document.querySelector("#newCountdown"); 
 var cntdownContainer = document.querySelector("#container");
 
+//Maximum nine countdowns available
 var countdownIds = [0,1,2,3,4,5,6,7,8];
 var cntdowns = [];
 
-newCntdownBtn.addEventListener("click", function addCounter(){
-    var cntdownDiv = document.createElement("div");
-    var cntdownId = document.createAttribute("id");
-    var cntdownIdValue = countdownIds.pop(); 
-    cntdownId.value = "cntdown-" + cntdownIdValue;
-    cntdownDiv.setAttributeNode(cntdownId);
+init();
 
-    cntdownDiv.innerHTML = "<p>"+
-                            "<span class=\"years\">0</span> Y "+ 
-                            "<span class=\"months\"> 0 </span> Mo "+
-                            "<span class=\"days\"> 0 </span> D "+
-                            "<span class=\"hours\"> 0 </span> H "+
-                            "<span class=\"minutes\"> 0 </span> M "+
-                            "<span class=\"seconds\"> 0 </span> S " + 
-                            "</p>"+ 
-                            "<input type=\"date\">";
+function init(){
 
-    cntdownContainer.appendChild(cntdownDiv);
+    //Initialize countdown objects
+    for (var i=0; i < countdownIds.length; i++){
+        cntdowns[i] = {};
+    }
 
-    var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
-    cntdownDate.addEventListener("input", initializeCntdown);
-});
+    newCntdownBtn.addEventListener("click", function addCounter(){
+        var cntdownDiv = document.createElement("div");
+        var cntdownId = document.createAttribute("id");
+        var cntdownIdValue = countdownIds.pop(); 
+        cntdownId.value = "cntdown-" + cntdownIdValue;
+        cntdownDiv.setAttributeNode(cntdownId);
+
+        cntdownDiv.innerHTML = "<p>"+
+                                "<span class=\"years\">0</span> Y "+ 
+                                "<span class=\"months\"> 0 </span> Mo "+
+                                "<span class=\"days\"> 0 </span> D "+
+                                "<span class=\"hours\"> 0 </span> H "+
+                                "<span class=\"minutes\"> 0 </span> M "+
+                                "<span class=\"seconds\"> 0 </span> S " + 
+                                "</p>"+ 
+                                "<input type=\"date\">";
+
+        cntdownContainer.appendChild(cntdownDiv);
+
+        var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
+        cntdownDate.addEventListener("input", initializeCntdown);
+    });
+
+}
 
 function initializeCntdown(){
     console.log("Date input event fired");
@@ -39,14 +51,19 @@ function initializeCntdown(){
 
     var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
 
-    cntdowns[cntdownIdValue] = moment.duration({
-        seconds: diffArray[5],
-        minutes: diffArray[4],
-        hours: diffArray[3],
-        days: diffArray[2],
-        months: diffArray[1],
-        years: diffArray[0]
-    });
+    cntdowns[cntdownIdValue].duration = moment.duration({
+                                    seconds: diffArray[5],
+                                    minutes: diffArray[4],
+                                    hours: diffArray[3],
+                                    days: diffArray[2],
+                                    months: diffArray[1],
+                                    years: diffArray[0]
+                                    });
+    cntdowns[cntdownIdValue].id = cntdownIdValue;
+
+    if (cntdowns[cntdownIdValue].intervalId === undefined){
+        cntdowns[cntdownIdValue].intervalId = setInterval(function() {decrementTime(cntdownIdValue)}, 1000);
+    }
 
     displayCurTime(cntdownIdValue);
 }
@@ -67,10 +84,20 @@ function diffTime(date1, date2){
 }
 
 //Decrement the countdown of 1 second
-function decrementTime(){
-    var decrement = moment.duration(1, 's');
-    countdown = countdown.subtract(decrement);
-    displayCurTime();
+function decrementTime(id){
+
+    if (!(cntdowns[id].duration.years() === 0 &&
+        cntdowns[id].duration.months() === 0 &&
+        cntdowns[id].duration.days() === 0 &&
+        cntdowns[id].duration.hours() === 0 &&
+        cntdowns[id].duration.minutes() === 0 &&
+        cntdowns[id].duration.seconds() === 0)){
+
+        var decrement = moment.duration(1, 's');
+        cntdowns[id].duration = cntdowns[id].duration.subtract(decrement);
+    }
+
+    displayCurTime(id);
     
 }
 
@@ -86,12 +113,12 @@ function displayCurTime(id){
     var minutes = document.querySelector(query + " .minutes");
     var seconds = document.querySelector(query + " .seconds");
 
-    years.textContent = cntdowns[id].years();
-    months.textContent = cntdowns[id].months();
-    days.textContent = cntdowns[id].days();
-    hours.textContent = cntdowns[id].hours();
-    minutes.textContent = cntdowns[id].minutes();
-    seconds.textContent = cntdowns[id].seconds();
+    years.textContent = cntdowns[id].duration.years();
+    months.textContent = cntdowns[id].duration.months();
+    days.textContent = cntdowns[id].duration.days();
+    hours.textContent = cntdowns[id].duration.hours();
+    minutes.textContent = cntdowns[id].duration.minutes();
+    seconds.textContent = cntdowns[id].duration.seconds();
 }
 
 
