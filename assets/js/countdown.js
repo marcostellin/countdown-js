@@ -20,30 +20,35 @@ function init(){
     }
 
     newCntdownBtn.addEventListener("click", function addCounter(){
-        var cntdownDiv = document.createElement("div");
-        var cntdownId = document.createAttribute("id");
         var cntdownIdValue = countdownIds.pop(); 
-        cntdownId.value = "cntdown-" + cntdownIdValue;
-        cntdownDiv.setAttributeNode(cntdownId);
 
-        cntdownDiv.innerHTML =  "<h3>Title <button class=\"btn-close\"><i class=\"fas fa-times\"></i></button></h3>" +
-                                "<p>"+
-                                "<span class=\"years\">0</span> Y "+ 
-                                "<span class=\"months\"> 0 </span> Mo "+
-                                "<span class=\"days\"> 0 </span> D "+
-                                "<span class=\"hours\"> 0 </span> H "+
-                                "<span class=\"minutes\"> 0 </span> M "+
-                                "<span class=\"seconds\"> 0 </span> S " + 
-                                "</p>"+ 
-                                "<input type=\"date\">";
+        if (cntdownIdValue != undefined){
+            var cntdownDiv = document.createElement("div");
+            var cntdownId = document.createAttribute("id");
+            cntdownId.value = "cntdown-" + cntdownIdValue;
+            cntdownDiv.setAttributeNode(cntdownId);
 
-        cntdownContainer.appendChild(cntdownDiv);
+            cntdownDiv.innerHTML =  "<h3>Title <button class=\"btn-close\"><i class=\"fas fa-times\"></i></button></h3>" +
+                                    "<p>"+
+                                    "<span class=\"years\">0</span> Y "+ 
+                                    "<span class=\"months\"> 0 </span> Mo "+
+                                    "<span class=\"days\"> 0 </span> D "+
+                                    "<span class=\"hours\"> 0 </span> H "+
+                                    "<span class=\"minutes\"> 0 </span> M "+
+                                    "<span class=\"seconds\"> 0 </span> S " + 
+                                    "</p>"+ 
+                                    "<input type=\"date\">";
 
-        var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
-        var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
-        console.log(cntClose);
-        cntdownDate.addEventListener("input", initializeCntdown);
-        cntClose.addEventListener("click", removeCntdown);
+            cntdownContainer.appendChild(cntdownDiv);
+            console.log("Created countdown with ID " + cntdownIdValue);
+
+            var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
+            var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
+            cntdownDate.addEventListener("input", initializeCntdown);
+            cntClose.addEventListener("click", removeCntdown);
+        } else {
+            alert("Too Many Countdowns. The limit is 9!");
+        }
     });
 }
 
@@ -79,6 +84,13 @@ function removeCntdown(){
     console.log("Close button clicked");
     var container = this.parentElement.parentElement;
     var parentOfContainer = container.parentElement;
+    var cntdownIdValue = Number(container.getAttribute("id").replace("cntdown-", ""));
+
+    //Make the id available for other countdowns
+    countdownIds.push(cntdownIdValue);
+    //Remove the interval function not used anymore
+    clearInterval(cntdowns[cntdownIdValue].intervalId);
+
     parentOfContainer.removeChild(container);
 }
 
