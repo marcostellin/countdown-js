@@ -17,14 +17,30 @@ h1 {
     text-shadow: 1px 0px 5px white;
 }
 
+h3 {
+    margin: 5px 20px 0 20px;
+}
+
 p {
     font-size: 30px;
+    margin: 0;
 }
 
 span {
     font-size: 50px;
     color: purple;
     text-shadow: 2px 0px 5px purple;
+}
+
+.btn-close{
+    float: right;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 23px;
+    line-height: 13px;
+
+    cursor: pointer;
 }
 
 #newCountdown {

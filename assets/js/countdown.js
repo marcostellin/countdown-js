@@ -26,7 +26,8 @@ function init(){
         cntdownId.value = "cntdown-" + cntdownIdValue;
         cntdownDiv.setAttributeNode(cntdownId);
 
-        cntdownDiv.innerHTML = "<button>X</button>" + "<p>"+
+        cntdownDiv.innerHTML =  "<h3>Title <button class=\"btn-close\"><i class=\"fas fa-times\"></i></button></h3>" +
+                                "<p>"+
                                 "<span class=\"years\">0</span> Y "+ 
                                 "<span class=\"months\"> 0 </span> Mo "+
                                 "<span class=\"days\"> 0 </span> D "+
@@ -39,9 +40,11 @@ function init(){
         cntdownContainer.appendChild(cntdownDiv);
 
         var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
+        var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
+        console.log(cntClose);
         cntdownDate.addEventListener("input", initializeCntdown);
+        cntClose.addEventListener("click", removeCntdown);
     });
-
 }
 
 function initializeCntdown(){
@@ -70,6 +73,13 @@ function initializeCntdown(){
     }
 
     displayCurTime(cntdownIdValue);
+}
+
+function removeCntdown(){
+    console.log("Close button clicked");
+    var container = this.parentElement.parentElement;
+    var parentOfContainer = container.parentElement;
+    parentOfContainer.removeChild(container);
 }
 
 //Accpet two dates and return an array containing the number of years, months, days, hours, minutes and seconds
