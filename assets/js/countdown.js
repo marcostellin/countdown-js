@@ -8,6 +8,10 @@ var cntdowns = [];
 
 init();
 
+
+
+
+
 function init(){
 
     //Initialize countdown objects
@@ -22,7 +26,7 @@ function init(){
         cntdownId.value = "cntdown-" + cntdownIdValue;
         cntdownDiv.setAttributeNode(cntdownId);
 
-        cntdownDiv.innerHTML = "<p>"+
+        cntdownDiv.innerHTML = "<button>X</button>" + "<p>"+
                                 "<span class=\"years\">0</span> Y "+ 
                                 "<span class=\"months\"> 0 </span> Mo "+
                                 "<span class=\"days\"> 0 </span> D "+
@@ -95,10 +99,8 @@ function decrementTime(id){
 
         var decrement = moment.duration(1, 's');
         cntdowns[id].duration = cntdowns[id].duration.subtract(decrement);
-    }
-
-    displayCurTime(id);
-    
+        displayCurTime(id);
+    }    
 }
 
 //Format the HTML in order to show the countdown time
