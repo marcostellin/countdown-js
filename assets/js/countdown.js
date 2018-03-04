@@ -19,6 +19,8 @@ function init(){
 
             var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
             var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
+            var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
+            title.value = "Title";
             cntdownDate.addEventListener("input", initializeCntdown);
             cntClose.addEventListener("click", removeCntdown);
         } else {
@@ -33,7 +35,7 @@ function buildCounterHTML(id){
     var cntdownId = document.createAttribute("id");
     cntdownId.value = "cntdown-" + id;
     cntdownDiv.setAttributeNode(cntdownId);
-    cntdownDiv.innerHTML =  "<h3>Title <button class=\"btn-close\"><i class=\"fas fa-times\"></i></button></h3>" +
+    cntdownDiv.innerHTML =  "<input type=text><button class=\"btn-close\"><i class=\"fas fa-times\"></i></button>" +
                             "<p>"+
                             "<span class=\"years\">0</span> Y "+ 
                             "<span class=\"months\"> 0 </span> Mo "+
@@ -76,7 +78,7 @@ function initializeCntdown(){
 //Remove the countdown when close button is clicked
 function removeCntdown(){
     console.log("Close button clicked");
-    var container = this.parentElement.parentElement;
+    var container = this.parentElement;
     var parentOfContainer = container.parentElement;
     var cntdownIdValue = Number(container.getAttribute("id").replace("cntdown-", ""));
 

@@ -32,6 +32,24 @@ span {
     text-shadow: 2px 0px 5px purple;
 }
 
+input[type=text]{
+    color: white;
+    background-color: inherit;
+
+    border: none;
+    width: 50%;
+
+    text-align: center;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+input[type=text]:focus{
+    background-color: white;
+    color: black;
+    text-align: left;
+}
+
 .btn-close{
     float: right;
     border: none;
