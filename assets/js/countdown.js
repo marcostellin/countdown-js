@@ -3,7 +3,7 @@ var cntdownContainer = document.querySelector("#container");
 
 //Maximum nine countdowns available
 var countdownIds = [0,1,2,3,4,5,6,7,8];
-var cntdowns = [];
+var cntdowns = new Array(countdownIds.length);
 
 init();
 
@@ -11,17 +11,12 @@ setInterval(decrementCntdown,1000);
 
 function init(){
 
-    //Initialize countdown objects
-    for (var i=0; i < countdownIds.length; i++){
-        cntdowns[i] = {};
-    }
-
     newCntdownBtn.addEventListener("click", function addCounter(){
         var cntdownIdValue = countdownIds.pop(); 
 
         if (cntdownIdValue != undefined){
             buildCounterHTML(cntdownIdValue);
-            
+
             var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
             var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
             cntdownDate.addEventListener("input", initializeCntdown);
@@ -32,6 +27,7 @@ function init(){
     });
 }
 
+//Create the HTML to display the countdown with ID id in the browser
 function buildCounterHTML(id){
     var cntdownDiv = document.createElement("div");
     var cntdownId = document.createAttribute("id");
@@ -63,21 +59,21 @@ function initializeCntdown(){
 
     var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
 
-    cntdowns[cntdownIdValue].duration = moment.duration({
-                                    seconds: diffArray[5],
-                                    minutes: diffArray[4],
-                                    hours: diffArray[3],
-                                    days: diffArray[2],
-                                    months: diffArray[1],
-                                    years: diffArray[0]
-                                    });
-    cntdowns[cntdownIdValue].id = cntdownIdValue;
-
-    cntdowns[cntdownIdValue].hasStarted = true;
+    cntdowns[cntdownIdValue] = {duration: moment.duration({
+                                                            seconds: diffArray[5],
+                                                            minutes: diffArray[4],
+                                                            hours: diffArray[3],
+                                                            days: diffArray[2],
+                                                            months: diffArray[1],
+                                                            years: diffArray[0]
+                                                          }),
+                                hasStarted: true
+                                };
 
     displayCurTime(cntdownIdValue);
 }
 
+//Remove the countdown when close button is clicked
 function removeCntdown(){
     console.log("Close button clicked");
     var container = this.parentElement.parentElement;
@@ -107,18 +103,20 @@ function diffTime(date1, date2){
     return out;
 }
 
+//Selects the current countdowns and decrement them by one second
 function decrementCntdown(){
     var curCntdowns = document.querySelectorAll("#container div");
     for (var i = 0; i < curCntdowns.length; i++){
+
         var cntdownIdValue = Number(curCntdowns[i].getAttribute("id").replace("cntdown-", ""));
-        console.log(cntdowns[cntdownIdValue].hasStarted);
-        if (cntdowns[cntdownIdValue].hasStarted){
+        if (cntdowns[cntdownIdValue] != undefined && cntdowns[cntdownIdValue].hasStarted){
             decrementTime(cntdownIdValue);
         }
+
     }
 }
 
-//Decrement the countdown of 1 second
+//Decrement the countdown by 1 second
 function decrementTime(id){
 
     if (!(cntdowns[id].duration.years() === 0 &&
