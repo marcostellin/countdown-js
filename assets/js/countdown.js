@@ -1,4 +1,3 @@
-var date = document.querySelector("input[type=date]");
 var newCntdownBtn = document.querySelector("#newCountdown"); 
 var cntdownContainer = document.querySelector("#container");
 
@@ -8,9 +7,7 @@ var cntdowns = [];
 
 init();
 
-
-
-
+setInterval(decrementCntdown,1000);
 
 function init(){
 
@@ -23,25 +20,8 @@ function init(){
         var cntdownIdValue = countdownIds.pop(); 
 
         if (cntdownIdValue != undefined){
-            var cntdownDiv = document.createElement("div");
-            var cntdownId = document.createAttribute("id");
-            cntdownId.value = "cntdown-" + cntdownIdValue;
-            cntdownDiv.setAttributeNode(cntdownId);
-
-            cntdownDiv.innerHTML =  "<h3>Title <button class=\"btn-close\"><i class=\"fas fa-times\"></i></button></h3>" +
-                                    "<p>"+
-                                    "<span class=\"years\">0</span> Y "+ 
-                                    "<span class=\"months\"> 0 </span> Mo "+
-                                    "<span class=\"days\"> 0 </span> D "+
-                                    "<span class=\"hours\"> 0 </span> H "+
-                                    "<span class=\"minutes\"> 0 </span> M "+
-                                    "<span class=\"seconds\"> 0 </span> S " + 
-                                    "</p>"+ 
-                                    "<input type=\"date\">";
-
-            cntdownContainer.appendChild(cntdownDiv);
-            console.log("Created countdown with ID " + cntdownIdValue);
-
+            buildCounterHTML(cntdownIdValue);
+            
             var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
             var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
             cntdownDate.addEventListener("input", initializeCntdown);
@@ -50,6 +30,26 @@ function init(){
             alert("Too Many Countdowns. The limit is 9!");
         }
     });
+}
+
+function buildCounterHTML(id){
+    var cntdownDiv = document.createElement("div");
+    var cntdownId = document.createAttribute("id");
+    cntdownId.value = "cntdown-" + id;
+    cntdownDiv.setAttributeNode(cntdownId);
+    cntdownDiv.innerHTML =  "<h3>Title <button class=\"btn-close\"><i class=\"fas fa-times\"></i></button></h3>" +
+                            "<p>"+
+                            "<span class=\"years\">0</span> Y "+ 
+                            "<span class=\"months\"> 0 </span> Mo "+
+                            "<span class=\"days\"> 0 </span> D "+
+                            "<span class=\"hours\"> 0 </span> H "+
+                            "<span class=\"minutes\"> 0 </span> M "+
+                            "<span class=\"seconds\"> 0 </span> S " + 
+                            "</p>"+ 
+                            "<input type=\"date\">";
+
+    cntdownContainer.appendChild(cntdownDiv);
+    console.log("Created countdown with ID " + id);
 }
 
 function initializeCntdown(){
@@ -73,9 +73,7 @@ function initializeCntdown(){
                                     });
     cntdowns[cntdownIdValue].id = cntdownIdValue;
 
-    if (cntdowns[cntdownIdValue].intervalId === undefined){
-        cntdowns[cntdownIdValue].intervalId = setInterval(function() {decrementTime(cntdownIdValue)}, 1000);
-    }
+    cntdowns[cntdownIdValue].hasStarted = true;
 
     displayCurTime(cntdownIdValue);
 }
@@ -86,15 +84,15 @@ function removeCntdown(){
     var parentOfContainer = container.parentElement;
     var cntdownIdValue = Number(container.getAttribute("id").replace("cntdown-", ""));
 
+    //Reset countdown object
+    cntdowns[cntdownIdValue] = {};
+
     //Make the id available for other countdowns
     countdownIds.push(cntdownIdValue);
-    //Remove the interval function not used anymore
-    clearInterval(cntdowns[cntdownIdValue].intervalId);
-
     parentOfContainer.removeChild(container);
 }
 
-//Accpet two dates and return an array containing the number of years, months, days, hours, minutes and seconds
+//Accept two dates and return an array containing the number of years, months, days, hours, minutes and seconds
 //between date1 and date2
 function diffTime(date1, date2){
     var timeUnits = ["years", "months", "days", "hours", "minutes", "seconds"];
@@ -107,6 +105,17 @@ function diffTime(date1, date2){
     }
 
     return out;
+}
+
+function decrementCntdown(){
+    var curCntdowns = document.querySelectorAll("#container div");
+    for (var i = 0; i < curCntdowns.length; i++){
+        var cntdownIdValue = Number(curCntdowns[i].getAttribute("id").replace("cntdown-", ""));
+        console.log(cntdowns[cntdownIdValue].hasStarted);
+        if (cntdowns[cntdownIdValue].hasStarted){
+            decrementTime(cntdownIdValue);
+        }
+    }
 }
 
 //Decrement the countdown of 1 second
