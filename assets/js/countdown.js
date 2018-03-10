@@ -17,6 +17,16 @@ function init(){
 
     restoreCntdowns();
 
+    var dateFields = document.querySelectorAll("input[type=date]");
+    var closeButtons = document.querySelectorAll(".btn-close");
+    var titleFields = document.querySelectorAll("input[type=text");
+
+    for (var i = 0; i < dateFields.length; i++){
+        dateFields[i].addEventListener("input", initializeCntdown);
+        closeButtons[i].addEventListener("click", removeCntdown);
+        titleFields[i].addEventListener("input", setTitle);
+    }
+
     window.addEventListener("unload", function(){
         for (var i = 0; i < cntdowns.length; i++){
             if (cntdowns[i]){
@@ -36,14 +46,20 @@ function init(){
 
             var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
             var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
-           //var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
-            //title.value = "Title";
+            var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
+            
             cntdownDate.addEventListener("input", initializeCntdown);
             cntClose.addEventListener("click", removeCntdown);
+            title.addEventListener("input", setTitle)
         } else {
             alert("Too Many Countdowns. The limit is 9!");
         }
     });
+}
+
+function setTitle(){
+    var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
+    cntdowns[cntdownIdValue].title = this.value;
 }
 
 //Create the HTML to display the countdown with ID id in the browser
@@ -85,17 +101,12 @@ function restoreCntdowns(){
             if (cntdowns[i]){
                 buildCounterHTML(i);
                 var splitDate = cntdowns[i].deadline;
+                var titleField = document.querySelector("#cntdown-" + i + " input[type=text]");
                 cntdowns[i].duration = computeDuration(splitDate);
                 cntdowns[i].hasStarted = true;
+                titleField.value = cntdowns[i].title;
             }
         }
-    }
-
-    var dateFields = document.querySelectorAll("input[type=date]");
-    var closeButtons = document.querySelectorAll(".btn-close");
-    for (var i = 0; i < dateFields.length; i++){
-        dateFields[i].addEventListener("input", initializeCntdown);
-        closeButtons[i].addEventListener("click", removeCntdown);
     }
 }
 
@@ -107,7 +118,7 @@ function initializeCntdown(){
 
     cntdowns[cntdownIdValue] = {duration: computeDuration(splitDate),
                                 deadline: splitDate,
-                                title: "Title",
+                                title: "",
                                 hasStarted: true
                                 };
 
