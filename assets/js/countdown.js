@@ -1,15 +1,32 @@
+var localStorage = window.localStorage;
 var newCntdownBtn = document.querySelector("#newCountdown"); 
 var cntdownContainer = document.querySelector("#container");
 
 //Maximum nine countdowns available
-var countdownIds = [0,1,2,3,4,5,6,7,8];
-var cntdowns = new Array(countdownIds.length);
+var countdownIds = [];
+var MAX_CNTDOWNS = 9;
+var cntdowns = new Array(MAX_CNTDOWNS);
+
+//localStorage.clear();
 
 init();
 
 setInterval(decrementCntdown,1000);
 
 function init(){
+
+    restoreCntdowns();
+
+    window.addEventListener("unload", function(){
+        for (var i = 0; i < cntdowns.length; i++){
+            if (cntdowns[i]){
+                cntdowns[i].hasStarted = false;
+            }
+        }
+
+        localStorage.setItem("countdownIds", JSON.stringify(countdownIds));
+        localStorage.setItem("cntdowns", JSON.stringify(cntdowns));
+    });
 
     newCntdownBtn.addEventListener("click", function addCounter(){
         var cntdownIdValue = countdownIds.pop(); 
@@ -19,8 +36,8 @@ function init(){
 
             var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
             var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
-            var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
-            title.value = "Title";
+           //var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
+            //title.value = "Title";
             cntdownDate.addEventListener("input", initializeCntdown);
             cntClose.addEventListener("click", removeCntdown);
         } else {
@@ -35,7 +52,7 @@ function buildCounterHTML(id){
     var cntdownId = document.createAttribute("id");
     cntdownId.value = "cntdown-" + id;
     cntdownDiv.setAttributeNode(cntdownId);
-    cntdownDiv.innerHTML =  "<input type=text><button class=\"btn-close\"><i class=\"fas fa-times\"></i></button>" +
+    cntdownDiv.innerHTML =  "<input type=text placeholder=\"Title\"><button class=\"btn-close\"><i class=\"fas fa-times\"></i></button>" +
                             "<p>"+
                             "<span class=\"years\">0</span> Y "+ 
                             "<span class=\"months\"> 0 </span> Mo "+
@@ -47,32 +64,71 @@ function buildCounterHTML(id){
                             "<input type=\"date\">";
 
     cntdownContainer.appendChild(cntdownDiv);
+
+    //var titleField = document.querySelector("#cntdown-" + id + " input[type=text]")
+    //titleField.value = cntdowns[id].title;
     console.log("Created countdown with ID " + id);
+}
+
+function restoreCntdowns(){
+    if (localStorage.getItem("countdownIds")){
+        countdownIds = JSON.parse(localStorage.getItem("countdownIds"));
+    } else {
+        for (var i = 0; i < MAX_CNTDOWNS; i++){
+            countdownIds[i] = i;
+        }
+    }
+
+    if (localStorage.getItem("cntdowns")){
+        cntdowns = JSON.parse(localStorage.getItem("cntdowns"));
+        for (var i = 0; i < cntdowns.length; i++){
+            if (cntdowns[i]){
+                buildCounterHTML(i);
+                var splitDate = cntdowns[i].deadline;
+                cntdowns[i].duration = computeDuration(splitDate);
+                cntdowns[i].hasStarted = true;
+            }
+        }
+    }
+
+    var dateFields = document.querySelectorAll("input[type=date]");
+    var closeButtons = document.querySelectorAll(".btn-close");
+    for (var i = 0; i < dateFields.length; i++){
+        dateFields[i].addEventListener("input", initializeCntdown);
+        closeButtons[i].addEventListener("click", removeCntdown);
+    }
 }
 
 function initializeCntdown(){
     console.log("Date input event fired");
     var splitDate = this.value.split("-");
+
+    var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
+
+    cntdowns[cntdownIdValue] = {duration: computeDuration(splitDate),
+                                deadline: splitDate,
+                                title: "Title",
+                                hasStarted: true
+                                };
+
+    displayCurTime(cntdownIdValue);
+}
+
+function computeDuration(splitDate){
     var curDate = moment(new Date());
 
     // The -1 in month is necessary because the months are zero based in Date objects
     var nextDate = moment(new Date(splitDate[0], splitDate[1] - 1, splitDate[2]));
     var diffArray = diffTime(curDate, nextDate);
 
-    var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
-
-    cntdowns[cntdownIdValue] = {duration: moment.duration({
-                                                            seconds: diffArray[5],
-                                                            minutes: diffArray[4],
-                                                            hours: diffArray[3],
-                                                            days: diffArray[2],
-                                                            months: diffArray[1],
-                                                            years: diffArray[0]
-                                                          }),
-                                hasStarted: true
-                                };
-
-    displayCurTime(cntdownIdValue);
+    return moment.duration({
+                            seconds: diffArray[5],
+                            minutes: diffArray[4],
+                            hours: diffArray[3],
+                            days: diffArray[2],
+                            months: diffArray[1],
+                            years: diffArray[0]
+                          });
 }
 
 //Remove the countdown when close button is clicked
@@ -83,7 +139,7 @@ function removeCntdown(){
     var cntdownIdValue = Number(container.getAttribute("id").replace("cntdown-", ""));
 
     //Reset countdown object
-    cntdowns[cntdownIdValue] = {};
+    cntdowns[cntdownIdValue] = null;
 
     //Make the id available for other countdowns
     countdownIds.push(cntdownIdValue);

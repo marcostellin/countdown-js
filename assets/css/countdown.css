@@ -44,10 +44,36 @@ input[type=text]{
     font-size: 20px;
 }
 
+input[type=text]::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white;
+    opacity: 1; /* Firefox */
+}
+
+input[type=text]:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: white;
+}
+
+input[type=text]::-ms-input-placeholder { /* Microsoft Edge */
+    color: white;
+}
+
 input[type=text]:focus{
     background-color: white;
     color: black;
     text-align: left;
+}
+
+input[type=text]:focus:-ms-input-placeholder{
+    color: black;
+    opacity: 0.5;
+}
+
+input[type=text]:focus::placeholder{
+    color: black;
+}
+
+input[type=text]:focus::-ms-input-placeholder{
+    color: black;
 }
 
 .btn-close{
