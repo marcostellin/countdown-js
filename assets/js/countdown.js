@@ -1,6 +1,7 @@
 var localStorage = window.localStorage;
 var newCntdownBtn = document.querySelector("#newCountdown"); 
 var cntdownContainer = document.querySelector("#container");
+var cntdownDateField = document.querySelector("input[type=date]");
 
 //Maximum nine countdowns available
 var countdownIds = [];
@@ -17,12 +18,10 @@ function init(){
 
     restoreCntdowns();
 
-    var dateFields = document.querySelectorAll("input[type=date]");
     var closeButtons = document.querySelectorAll(".btn-close");
     var titleFields = document.querySelectorAll("input[type=text");
 
-    for (var i = 0; i < dateFields.length; i++){
-        dateFields[i].addEventListener("input", initializeCntdown);
+    for (var i = 0; i < closeButtons.length; i++){
         closeButtons[i].addEventListener("click", removeCntdown);
         titleFields[i].addEventListener("input", setTitle);
     }
@@ -39,21 +38,29 @@ function init(){
     });
 
     newCntdownBtn.addEventListener("click", function addCounter(){
-        var cntdownIdValue = countdownIds.pop(); 
-        console.log("Popped ID " + cntdownIdValue);
+        var date = cntdownDateField.value;
+        if (date !== ""){
+            var splitDate = date.split("-");
+            var cntdownIdValue = countdownIds.pop(); 
+            console.log("Popped ID " + cntdownIdValue);
 
-        if (cntdownIdValue != undefined){
-            buildCounterHTML(cntdownIdValue);
+            if (cntdownIdValue != undefined){
 
-            var cntdownDate = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=date]");
-            var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
-            var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
-            
-            cntdownDate.addEventListener("input", initializeCntdown);
-            cntClose.addEventListener("click", removeCntdown);
-            title.addEventListener("input", setTitle)
+                buildCounterHTML(cntdownIdValue);
+
+                var cntClose = document.querySelector("#cntdown-" + cntdownIdValue + " .btn-close");
+                var title = document.querySelector("#cntdown-" + cntdownIdValue + " input[type=text]");
+                
+                cntClose.addEventListener("click", removeCntdown);
+                title.addEventListener("input", setTitle);
+
+                initializeCntdown(cntdownIdValue, splitDate);
+            } else {
+                alert("Too Many Countdowns. The limit is 9!");
+            }
+
         } else {
-            alert("Too Many Countdowns. The limit is 9!");
+            alert("Date is not valid!");
         }
     });
 }
@@ -112,19 +119,17 @@ function restoreCntdowns(){
     }
 }
 
-function initializeCntdown(){
-    console.log("Date input event fired");
-    var splitDate = this.value.split("-");
+function initializeCntdown(id, splitDate){
 
-    var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
+    
+    cntdowns[id] = {duration: computeDuration(splitDate),
+                    deadline: splitDate,
+                    title: "",
+                    hasStarted: true
+                    };
 
-    cntdowns[cntdownIdValue] = {duration: computeDuration(splitDate),
-                                deadline: splitDate,
-                                title: "",
-                                hasStarted: true
-                                };
-
-    displayCurTime(cntdownIdValue);
+    displayCurTime(id);
+    
 }
 
 function computeDuration(splitDate){
@@ -175,7 +180,7 @@ function diffTime(date1, date2){
     return out;
 }
 
-//Selects the current countdowns and decrement them by one second
+//Select the current countdowns and decrement them by one second
 function decrementCntdown(){
     var curCntdowns = document.querySelectorAll("#container div");
     for (var i = 0; i < curCntdowns.length; i++){
