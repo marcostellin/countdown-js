@@ -40,6 +40,7 @@ function init(){
 
     newCntdownBtn.addEventListener("click", function addCounter(){
         var cntdownIdValue = countdownIds.pop(); 
+        console.log("Popped ID " + cntdownIdValue);
 
         if (cntdownIdValue != undefined){
             buildCounterHTML(cntdownIdValue);
@@ -57,6 +58,7 @@ function init(){
     });
 }
 
+//Callback used to set the title of a countdown
 function setTitle(){
     var cntdownIdValue = Number(this.parentElement.getAttribute("id").replace("cntdown-",""));
     cntdowns[cntdownIdValue].title = this.value;
@@ -154,6 +156,7 @@ function removeCntdown(){
 
     //Make the id available for other countdowns
     countdownIds.push(cntdownIdValue);
+    console.log("Pushed ID " + cntdownIdValue);
     parentOfContainer.removeChild(container);
 }
 
