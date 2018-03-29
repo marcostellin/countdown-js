@@ -19,7 +19,7 @@
 
     <h1>CountdownJS</h1>
 
-    <a href="#openModal">Add New Countdown</a>
+    <a href="#openModal" id="modalLink">Add New Countdown</a>
 
     <div id="container">
 
@@ -29,8 +29,16 @@
         <div>
             <a href="#close" title="Close" class="close">X</a>
             <h2>Add New Countdown</h2>
-            <input type="date">
-            <button id="newCountdown">Add Countdown</button>
+            <div>
+               <label name="title">Title: </label>
+               <input type="text" name="title"> 
+            </div>
+            <div>
+                <label name="date">Date: </label>
+                <input type="date" name="date">  
+            </div>
+            
+            <a class="btn btn-success" id="newCountdown" href="#close">Add Countdown</a></button>
         </div>  
     </div>
 

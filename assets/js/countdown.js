@@ -85,8 +85,7 @@ function buildCounterHTML(id){
                             "<span class=\"hours\"> 0 </span> H "+
                             "<span class=\"minutes\"> 0 </span> M "+
                             "<span class=\"seconds\"> 0 </span> S " + 
-                            "</p>"+ 
-                            "<input type=\"date\">";
+                            "</p>";
 
     cntdownContainer.appendChild(cntdownDiv);
 
