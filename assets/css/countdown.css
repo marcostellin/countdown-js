@@ -188,12 +188,14 @@ span {
 
 .modalDialog > div {
     color: black;
-    width: 400px;
+    width: 50%;
     position: relative;
-    margin: 20% auto;
-    padding: 5px 20px 13px 20px;
+    margin: 15% auto;
+    box-sizing: border-box;
+    padding: 20px 13px 20px 13px;
     border-radius: 10px;
     background: #fff;
+    text-align: center;
 }
 
 .close {
@@ -220,6 +222,19 @@ span {
 .modalDialog div .btn-success {
     margin: 20px auto;
 }
+
+.modalDialog input {
+    width: 80%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#modal-form {
+    display: inline-block;
+    text-align: left;
+}
+
+
 
 
 
