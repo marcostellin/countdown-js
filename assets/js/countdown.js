@@ -2,6 +2,7 @@ var localStorage = window.localStorage;
 var newCntdownBtn = document.querySelector("#newCountdown"); 
 var cntdownContainer = document.querySelector("#container");
 var cntdownDateField = document.querySelector("input[type=date]");
+var modalTitleField = document.querySelector("#modal-title");
 
 //Maximum nine countdowns available
 var countdownIds = [];
@@ -89,8 +90,8 @@ function buildCounterHTML(id){
 
     cntdownContainer.appendChild(cntdownDiv);
 
-    //var titleField = document.querySelector("#cntdown-" + id + " input[type=text]")
-    //titleField.value = cntdowns[id].title;
+    var titleField = document.querySelector("#cntdown-" + id + " input[type=text]")
+    titleField.value = modalTitleField.value;
     console.log("Created countdown with ID " + id);
 }
 
@@ -123,7 +124,7 @@ function initializeCntdown(id, splitDate){
     
     cntdowns[id] = {duration: computeDuration(splitDate),
                     deadline: splitDate,
-                    title: "",
+                    title: modalTitleField.value,
                     hasStarted: true
                     };
 
